@@ -1,0 +1,43 @@
+version: "3.4"
+services:
+  app:
+    build:
+      context: ../../.
+      dockerfile: ./misc/docker/Dockerfile
+      target: builder
+    image: ${MY_IMAGE_USER}/${MY_IMAGE_NAME}:${MY_IMAGE_VERSION}-dev
+    restart: unless-stopped
+    ports:
+      - ${NARASI_EXPOSE_PORT_DEV}:${NARASI_LISTEN_PORT}
+    volumes:
+      - ../../.:/src/app
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      - DEBUG=true
+      - TZ=Asia/Jakarta
+      - NARASI_LISTEN_PORT
+      - MONGO_INITDB_URI
+      - MONGO_INITDB_NAME
+      - MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD
+      - NODE_ENV
+      - REDIS_HOST
+      - REDIS_PORT
+      - JWT_SECRET
+      - JWT_EXPIRES_IN
+      - JWT_COOKIE_EXPIRES_IN
+      - EMAIL_USERNAME
+      - EMAIL_PASSWORD
+      - EMAIL_HOST
+      - EMAIL_PORT
+    # entrypoint:
+    #   - /bin/sh
+    # command:
+    #   - -c
+    #   - npm test
+    command:
+      - tail 
+      - -f
+      - /dev/null
