@@ -8,7 +8,7 @@ services:
     image: ${MY_IMAGE_USER}/${MY_IMAGE_NAME}:${MY_IMAGE_VERSION}-dev
     restart: unless-stopped
     ports:
-      - ${NARASI_EXPOSE_PORT_DEV}:${NARASI_LISTEN_PORT}
+      - ${NARASI_APP_EXPOSE_PORT_DEV}:${NARASI_APP_LISTEN_PORT}
     volumes:
       - ../../.:/src/app
     depends_on:
@@ -17,7 +17,7 @@ services:
     environment:
       - DEBUG=true
       - TZ=Asia/Jakarta
-      - NARASI_LISTEN_PORT
+      - NARASI_APP_LISTEN_PORT
       - MONGO_INITDB_URI
       - MONGO_INITDB_NAME
       - MONGO_INITDB_ROOT_USERNAME
