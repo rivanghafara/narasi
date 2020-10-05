@@ -1,5 +1,5 @@
 const handleFactory = require("../controllers/handleFactory");
-const Story = require("../models/storyModel");
+
 const StoryModel = require("../models/storyModel");
 const catchAsync = require("../utils/catchAsync");
 
