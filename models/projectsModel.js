@@ -27,16 +27,21 @@ const projectSchema = new mongoose.Schema({
     enum: ["drafted", "on-going", "funded", "ended"],
     default: "drafted",
   },
+  approval: {
+    isApproved: {
+      type: Boolean,
+      default: false
+    },
+  },
   created_at: {
     type: Date,
     default: Date.now(),
   },
 });
 
-
 projectSchema.pre(/^find/, function (next) {
-  this.select('-__v')
-  this.start = Date.now()
+  this.select("-__v");
+  this.start = Date.now();
 
   next();
 });
@@ -44,7 +49,7 @@ projectSchema.pre(/^find/, function (next) {
 projectSchema.pre(/^find/, function (next) {
   this.populate({
     path: "creator",
-    select: '-investing',
+    select: "-investing",
   });
 
   next();
@@ -53,8 +58,8 @@ projectSchema.pre(/^find/, function (next) {
 projectSchema.post(/^find/, function (doc, next) {
   console.log(`Query took ${Date.now() - this.start} miliseconds!`);
 
-  next()
-})
+  next();
+});
 
 // campaignSchema.pre(/^find/, function (next) {
 //   this.populate({

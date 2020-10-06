@@ -90,6 +90,15 @@ exports.allowedOnly = catchAsync(async (req, res, next) => {
   if (story.author.id !== req.user.id)
     return next(new AppError("No Data Available", 404));
 
-  req.story = story
-  next()
+  req.story = story;
+  next();
 });
+
+exports.restrictedTo = (...roles) => {
+  console.log(roles);
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) return next(new AppError('You do not have permission to perform this action', 403))
+
+    next();
+  };
+};
