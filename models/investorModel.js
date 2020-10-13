@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const investorSchema = new mongoose.Schema({
-  project_name: {
+  project_id: {
     type: mongoose.Schema.ObjectId,
     ref: "Project",
     required: [true, "project must have a name"],
   },
-  investor: {
+  investor_id: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
     required: [true, "Project must have an creator"],
@@ -20,22 +20,27 @@ const investorSchema = new mongoose.Schema({
     enum: ["pending", "cancel", "paid"],
     default: "pending",
   },
-  created_at: {
+  pledge_at: {
     type: Date,
     default: Date.now(),
   },
 });
 
-// investorSchema.pre('find', function (next) {
-//   this.select("-__v");
-// });
+investorSchema.pre('find', function (next) {
+  this.select("-__v -investor");
 
-// investorSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: 'project_name',
-//     select: 'project_name'
-//   })
-// });
+  next()
+});
+
+investorSchema.pre('find', function (next) {
+  this.populate({
+    path: 'project_id',
+    select:'-creator -approval'
+  })
+
+  next()
+});
+
 
 const Investor = mongoose.model("Investor", investorSchema);
 

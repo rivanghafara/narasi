@@ -9,11 +9,11 @@ const projectSchema = new mongoose.Schema({
   creator: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
-    required: [true, "Campaign must have an creator"],
+    required: [true, "Project must have an creator"],
   },
   target_fund: {
     type: Number,
-    required: [true, "Campaign must have target fund"],
+    required: [true, "Project must have target fund"],
   },
   target_end: {
     type: Date,
@@ -24,13 +24,13 @@ const projectSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["drafted", "on-going", "funded", "ended"],
+    enum: ["drafted", "on-going", "ended", "canceled"],
     default: "drafted",
   },
   approval: {
     isApproved: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   created_at: {
@@ -49,7 +49,7 @@ projectSchema.pre(/^find/, function (next) {
 projectSchema.pre(/^find/, function (next) {
   this.populate({
     path: "creator",
-    select: "-investing",
+    select: "-investing -role",
   });
 
   next();
