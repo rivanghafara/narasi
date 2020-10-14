@@ -21,7 +21,7 @@ exports.setCreatorId = (req, res, next) => {
  * Set project to req.project
  * @param {request} req contain params of project id
  * @param {response} res
- * @param {next} next
+ * @param {next} next 
  */
 exports.setProject = catchAsync(async (req, res, next) => {
   if (!req.params.id) return next(new AppError("Data is not available", 404));
@@ -56,6 +56,15 @@ exports.projectStatus = (...status) => {
   };
 };
 
+
+/**
+ * Check if user has already joined the project
+ * If 'false' then set to 'true'
+ * If 'true' then return error 
+ * @param {request} req contain user.id and project.id 
+ * @param {response} res 
+ * @param {next} next it will next to return error
+ */
 exports.isAlreadyJoin = catchAsync(async (req, res, next) => {
   // cek apakah user sudah pernah pledge ke project yg sama
   const user = await Investor.find({
@@ -68,9 +77,14 @@ exports.isAlreadyJoin = catchAsync(async (req, res, next) => {
 
   req.body.project_id = req.project.id;
   req.body.investor_id = req.user;
-  next();
 });
 
+/**
+ * Set project to 'approved' but this restricted only to admin
+ * @param {request} req contain params of project.approval.isApproved
+ * @param {response} res 
+ * @param {next} next it will next by returning error
+ */
 exports.approveProject = catchAsync(async (req, res, next) => {
   if (req.project.approval.isApproved)
     return next(new AppError("This project is already aprroved.", 403));

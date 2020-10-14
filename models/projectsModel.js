@@ -61,6 +61,7 @@ projectSchema.post(/^find/, function (doc, next) {
   next();
 });
 
+
 // campaignSchema.pre(/^find/, function (next) {
 //   this.populate({
 //     path: "creator",
