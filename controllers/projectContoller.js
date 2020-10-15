@@ -67,16 +67,18 @@ exports.projectStatus = (...status) => {
  */
 exports.isAlreadyJoin = catchAsync(async (req, res, next) => {
   // cek apakah user sudah pernah pledge ke project yg sama
-  const user = await Investor.find({
+  const user = await Investor.findOne({
     investor_id: req.user.id,
     project_id: req.project.id,
   }).exec();
 
-  if (user.length)
-    return next(new AppError("You are already backed this project", 403));
+  if (user) return next(new AppError("You are already backed this project", 403));
 
+  if (req.body.pledge === undefined || req.body.pledge < 1) return next(new AppError("You need to pledege with number", 400))
   req.body.project_id = req.project.id;
   req.body.investor_id = req.user;
+
+  next()
 });
 
 /**
