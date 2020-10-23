@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
     minlength: [8, "Password should longer than 8 characters"],
     select: false,
   },
+  role: {
+    type: String,
+    enum: ["admin", "user"],
+    default: "user",
+  },
 });
 
 userSchema.pre(/^find/, function (next) {

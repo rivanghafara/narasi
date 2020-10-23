@@ -8,12 +8,22 @@ const StoryModel = require("../models/storyModel");
 const AppError = require("../utils/appError");
 const secret = process.env.JWT_SECRET;
 
+/**
+ * 
+ * @param {String} id It should be a string parameter
+ */
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
+/**
+ * It is used in login and register
+ * @param {Object} user User parameter is collected from req.body
+ * @param {Number} statusCode set status code 
+ * @param {response} res 
+ */
 const createToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
@@ -58,6 +68,12 @@ exports.login = catchAsync(async (req, res, next) => {
   createToken(user, 200, res);
 });
 
+/**
+ * It is used to check if user has credential to access the route
+ * @param {request} req contains req.header 
+ * @param {response} res 
+ * @param {next} next 
+ */
 exports.protects = catchAsync(async (req, res, next) => {
   // Check token and token should exist
   if (
@@ -90,6 +106,14 @@ exports.allowedOnly = catchAsync(async (req, res, next) => {
   if (story.author.id !== req.user.id)
     return next(new AppError("No Data Available", 404));
 
-  req.story = story
-  next()
+  req.story = story;
+  next();
 });
+
+exports.restrictedTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) return next(new AppError('You do not have permission to perform this action', 403))
+
+    next();
+  };
+};
