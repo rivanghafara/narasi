@@ -13,6 +13,10 @@ const projectSchema = new mongoose.Schema({
     ref: "User",
     required: [true, "Project must have an creator"],
   },
+  current_fund: {
+    type: Number,
+    default: 0
+  },
   target_fund: {
     type: Number,
     required: [true, "Project must have target fund"],
@@ -57,19 +61,18 @@ projectSchema.pre(/^find/, function (next) {
   next();
 });
 
+
+/**
+ * This does not work when get all projects
+ */
 projectSchema.post(/^find/, async function (doc, next) {
-  let investor_id = new mongoose.Types.ObjectId(doc.id);
+  if (doc.length > 1) return next()
 
-  if (doc.length > 1) {
-    investor_id = "";
-  }
-
-  console.log(doc);
   const total = await Investor.aggregate([
     {
       $match: {
         status: "paid",
-        project_id: undefined,
+        project_id: new mongoose.Types.ObjectId(doc.id),
       },
     },
     {
@@ -82,9 +85,8 @@ projectSchema.post(/^find/, async function (doc, next) {
     },
   ]);
 
-  doc.current_fund = total[0].total
-
-  console.log(total);
+  if (total.length > 0) doc.current_fund = total[0].total
+  
   next();
 });
 
@@ -93,16 +95,6 @@ projectSchema.post(/^find/, function (doc, next) {
 
   next();
 });
-
-// campaignSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "creator",
-//     select: "name",
-//     select: "-__v -funding"
-//   });
-
-//   next();
-// });
 
 const Project = mongoose.model("Project", projectSchema);
 

@@ -36,6 +36,10 @@ router
 
 router
   .route("/:id/update")
-  .patch(projectController.setProject, projectController.updateProject);
+  .patch(
+    projectController.setProject,
+    projectController.restrictUpdate,
+    projectController.updateProject
+  );
 
 module.exports = router;

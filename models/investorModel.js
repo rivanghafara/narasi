@@ -41,6 +41,7 @@ investorSchema.pre('find', function (next) {
   next()
 });
 
+
 const Investor = mongoose.model("Investor", investorSchema);
 
 module.exports = Investor;
