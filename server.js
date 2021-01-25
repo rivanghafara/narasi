@@ -24,10 +24,6 @@ const server = app.listen(port, () => {
   console.log(`We are running on port ${port}`);
 });
 
-app.get('/', (req, res)=>{
-  res.send('hahah')
-})
-
 process.on("unhandledRejection", (err) => {
   console.log(err.name, err.message);
   console.log("UNHANDLER REJECTION! - Shutting down...");

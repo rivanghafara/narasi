@@ -15,7 +15,7 @@ const investorSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Project must have an pledge price"],
   },
-  status: {
+  payment_status: {
     type: String,
     enum: ["pending", "cancel", "paid"],
     default: "pending",
@@ -35,13 +35,11 @@ investorSchema.pre('find', function (next) {
 investorSchema.pre('find', function (next) {
   this.populate({
     path: 'project_id',
-    select:'-creator -approval'
+    select: '-creator -approval'
   })
-
   next()
 });
 
-
-const Investor = mongoose.model("Investor", investorSchema);
+const Investor = mongoose.model("Investor", investorSchema)
 
 module.exports = Investor;
