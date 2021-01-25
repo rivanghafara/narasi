@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-
-const Investor = require("./investorModel");
+const Investor = require('./investorModel')
 
 const projectSchema = new mongoose.Schema({
   project_name: {
@@ -32,6 +31,10 @@ const projectSchema = new mongoose.Schema({
     type: String,
     enum: ["drafted", "on-going", "ended", "canceled"],
     default: "drafted",
+  },
+  location: {
+    type: String,
+    default: 'Earth'
   },
   approval: {
     isApproved: {
@@ -66,12 +69,10 @@ projectSchema.pre(/^find/, function (next) {
  * This does not work when get all projects
  */
 projectSchema.post(/^find/, async function (doc, next) {
-  if (doc.length > 1) return next()
-
-  const total = await Investor.aggregate([
+  const currentFund = await Investor.aggregate([
     {
       $match: {
-        status: "paid",
+        payment_status: "paid",
         project_id: new mongoose.Types.ObjectId(doc.id),
       },
     },
@@ -84,9 +85,10 @@ projectSchema.post(/^find/, async function (doc, next) {
       },
     },
   ]);
+  if (currentFund.length > 0) {
+    doc.current_fund = currentFund[0].total
+  }
 
-  if (total.length > 0) doc.current_fund = total[0].total
-  
   next();
 });
 

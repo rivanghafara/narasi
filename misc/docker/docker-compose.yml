@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   mongo:
-    image: mongo:4.0.5
+    image: mongo:latest
     restart: unless-stopped
     volumes:
       - ../_/volumes/mongo:/data/db
