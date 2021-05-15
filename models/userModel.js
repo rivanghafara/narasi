@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
     enum: ["admin", "user"],
     default: "user",
   },
+  images: {
+    type: String,
+    required: true
+  }
 });
 
 userSchema.pre(/^find/, function (next) {
