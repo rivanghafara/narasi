@@ -49,13 +49,7 @@ exports.isApproved = (req, res, next) => {
 exports.projectStatus = (...status) => {
   return (req, res, next) => {
     if (!status.includes(req.project.status))
-      return next(
-        new AppError(
-          `Your request is declined. This project is ${req.project.status}`,
-          403
-        )
-      );
-
+      return next(new AppError(`Your request is declined. This project is ${req.project.status}`, 403));
     next();
   };
 };

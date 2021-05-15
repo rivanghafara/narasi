@@ -37,7 +37,9 @@ services:
     # command:
     #   - -c
     #   - npm test
-    command:
-      - tail 
-      - -f
-      - /dev/null
+    # command:
+    #   - tail 
+    #   - -f
+    #   - /dev/null
+    command: 
+      - nodemon

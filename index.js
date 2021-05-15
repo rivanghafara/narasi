@@ -9,7 +9,6 @@ process.on('uncaughtException', err => {
   process.exit(1)
 })
 
-
 const DB = process.env.MONGO_INITDB_URI + process.env.MONGO_INITDB_NAME;
 
 mongoose
