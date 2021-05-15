@@ -57,4 +57,4 @@ RUN apk add --update tzdata
 COPY --from=builder /src/app/bin/narasi_app /src/app/narasi_app
 COPY ./config /src/app/config
 
-CMD ["/src/app/narasi_app"]
+CMD ["/src/app/narasi_app", "nodemon"]

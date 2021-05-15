@@ -3,8 +3,10 @@ const Project = require("../models/projectsModel");
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
+const handleFactory = require('./handleFactory')
 
 exports.getMe = catchAsync(async (req, res) => {
+  console.log(req.headers);
   const user = await User.findById(req.user.id);
   // const projects = await Project.find({ creator: req.user.id });
   const investment = await Investor.find({ investor_id: req.user.id });
@@ -22,3 +24,5 @@ exports.getMe = catchAsync(async (req, res) => {
     },
   });
 });
+
+exports.getUsers = handleFactory.getAll(User)
