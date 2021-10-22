@@ -23,9 +23,7 @@ exports.getAll = (Model) => catchAsync(async (req, res) => {
     result: doc.length,
     page: parseInt(req.query.page) || 1,
     limit: parseInt(req.query.limit) || 5,
-    data: {
-      data: doc,
-    },
+    data: doc,
   });
 });
 
@@ -43,6 +41,8 @@ exports.deleteOne = (Model) =>
 
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    // if (!doc.approval.isApproved && req.body.approval.isApproved) return next(new AppError('Cannot be launched. Project is not approved.'))
+
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,

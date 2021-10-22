@@ -4,10 +4,14 @@ services:
     image: mongo:latest
     restart: unless-stopped
     volumes:
-      - ../_/volumes/mongo:/data/db
+      - mongo:/data/db
     ports: 
       - "27017:27017"
   redis:
     image: redis
     ports:
       - "6379:6379"
+
+volumes:
+  mongo:
+  node_modules:

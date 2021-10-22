@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const slugify = require('slugify')
 const Investor = require('./investorModel')
 
 const projectSchema = new mongoose.Schema({
@@ -6,6 +7,9 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: [true, "project must have a name"],
     minlength: [1, "project name should have longer 1 word"],
+  },
+  slug: {
+    type: String
   },
   creator: {
     type: mongoose.Schema.ObjectId,
@@ -15,6 +19,10 @@ const projectSchema = new mongoose.Schema({
   current_fund: {
     type: Number,
     default: 0
+  },
+  categories: {
+    type: String,
+    required: true
   },
   target_fund: {
     type: Number,
@@ -91,6 +99,14 @@ projectSchema.post(/^find/, async function (doc, next) {
 
   next();
 });
+
+projectSchema.index({ project_name: 'text' })
+
+projectSchema.pre('save', function (next) {
+  this.slug = slugify(this.project_name, { lower: true })
+
+  next()
+})
 
 projectSchema.post(/^find/, function (doc, next) {
   console.log(`Query took ${Date.now() - this.start} miliseconds!`);

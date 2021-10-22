@@ -11,6 +11,7 @@ services:
       - ${NARASI_APP_EXPOSE_PORT_DEV}:${NARASI_APP_LISTEN_PORT}
     volumes:
       - ../../.:/src/app
+      - node_modules:${PWD}/../../node_modules
     depends_on:
       - mongo
       - redis

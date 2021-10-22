@@ -30,6 +30,8 @@ class APIFeature {
       return this
     }
 
+    // const searchIndex = (!queryObj.project_name) ? queryObj : { $text: { $search: queryObj.project_name } } // implement it in the future
+
     // cari query menggunakan db query
     this.dbQuery = this.dbQuery.find(queryObj)
 

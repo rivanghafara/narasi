@@ -42,4 +42,12 @@ router
     projectController.updateProject
   );
 
+router
+  .route("/:id/launch")
+  .patch(
+    projectController.setProject,
+    projectController.prepareLaunch,
+    projectController.updateProject
+  );
+
 module.exports = router;
