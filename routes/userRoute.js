@@ -1,17 +1,30 @@
 const express = require("express");
+
+const authController = require("../controllers/authController");
+const userController = require("../controllers/userController");
+const uploadController = require("../controllers/uploadController");
+
 const router = express.Router();
 
-const authController = require('../controllers/authController')
-const userController = require('../controllers/userController')
+router.post("/register", authController.register);
+router.post("/login", authController.login);
+router.get("/logout", authController.logout);
 
 
-router.post('/register', authController.register)
-router.post('/login', authController.login)
-router.get('/logout', authController.logout)
+router.use(authController.protects)
 
-router.get('/profile', authController.protects, userController.getMe)
+router.get("/profile", userController.getMe);
 
-router.get('/all-users', authController.protects, authController.restrictedTo("admin"), userController.getUsers)
+router.get(
+  "/all-users",
+  authController.restrictedTo("admin"),
+  userController.getUsers
+);
 
+router.patch(
+  "/upload",
+  uploadController.validateUserImage,
+  uploadController.uploadImage
+);
 
-module.exports = router
+module.exports = router;

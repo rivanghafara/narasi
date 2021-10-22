@@ -44,6 +44,10 @@ const createToken = (user, statusCode, res) => {
 };
 
 exports.register = catchAsync(async (req, res, next) => {
+  const isEmailExist = await User.findOne({email: req.body.email}).exec()
+  if (isEmailExist) {
+    return next(new AppError("Email already exist", 403))
+  }
   const newUser = await User.create(req.body);
   createToken(newUser, 201, res);
 });
@@ -72,15 +76,30 @@ exports.login = catchAsync(async (req, res, next) => {
  */
 exports.protects = catchAsync(async (req, res, next) => {
   // Check token and token should exist
+  if (!req.headers.authorization) {
+    return next(new AppError('You are not allowed to access this route', 401))
+  }
+
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
+
+  // check if token available
   if (!token) return next(new AppError("No Data Available", 404));
 
   // Verification ID in jwt
-  const decoded = await promisify(jwt.verify)(token, secret);
+  const decoded = jwt.verify(token, secret, (err, jwtDecoded) => {
+    if (err) {
+      return next(new AppError("User does not exist", 404));
+    }
+    return jwtDecoded
+  })
+
+  if (!decoded) {
+    return new AppError("User does not exist", 404);
+  }
 
   // Find user in db with Id
   const currentUser = await User.findById(decoded.id);
