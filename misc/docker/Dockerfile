@@ -1,12 +1,11 @@
 #################
 # BUILDER IMAGE #
 #################
-FROM node:12-alpine as builder
+FROM node:14-alpine as builder
 
 
 WORKDIR /src/app
 
-RUN apk add --update --no-cache build-base python python-dev bash
 RUN apk update
 RUN apk upgrade
 RUN apk add ca-certificates && \
