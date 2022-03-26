@@ -44,7 +44,7 @@ const createToken = (user, statusCode, res) => {
 };
 
 exports.register = catchAsync(async (req, res, next) => {
-  const isEmailExist = await User.findOne({email: req.body.email}).exec()
+  const isEmailExist = await User.findOne({ email: req.body.email }).exec()
   if (isEmailExist) {
     return next(new AppError("Email already exist", 403))
   }
@@ -130,3 +130,26 @@ exports.logout = (req, res) => {
     message: 'You are logged out'
   })
 }
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1. check use in db
+  const user = await User.findById(req.user.id).select('+password')
+  
+  // 2. check if password and password confirm is identical
+  if (req.body.password !== req.body.passwordConfirm) {
+    return next(new AppError('Make sure password and password confirmed are the same.', 401))
+  }
+
+  // 2. check if current password is correct
+  if (!user.correctPassword(req.body.currentPassword, user.password)) {
+    return next(new AppError('Your Current passwod is wrong.', 401))
+  }
+  
+
+  // 3. update password
+  user.password = req.body.password
+  await user.save()
+
+  // 4. create new token
+  createToken(user, 201, res)
+})

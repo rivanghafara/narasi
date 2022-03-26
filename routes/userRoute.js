@@ -8,10 +8,12 @@ const router = express.Router();
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
-router.get("/logout", authController.logout);
+
 
 
 router.use(authController.protects)
+
+router.get("/logout", authController.logout);
 
 router.get("/profile", userController.getMe);
 
@@ -26,5 +28,7 @@ router.patch(
   uploadController.validateUserImage,
   uploadController.uploadImage
 );
+
+router.patch('/updatePassword', authController.updatePassword)
 
 module.exports = router;
