@@ -36,7 +36,12 @@ exports.isApproved = (req, res, next) => {
 exports.projectStatus = (...status) => {
   return (req, res, next) => {
     if (!status.includes(req.project.status))
-      return next(new AppError(`Your request is declined. This project is ${req.project.status}`, 403));
+      return next(
+        new AppError(
+          `Your request is declined. This project is ${req.project.status}`,
+          403
+        )
+      );
     next();
   };
 };
@@ -56,11 +61,11 @@ exports.isAlreadyJoin = catchAsync(async (req, res, next) => {
     project_id: req.project.id,
   }).exec();
 
-  const project = await Project.findById(req.project.id)
+  const project = await Project.findById(req.project.id);
 
   // creator tidak boleh pledge project nya sendiri
   if (req.user.id === project.creator.id) {
-    return next(new AppError("Creator cannot backed your own project", 403))
+    return next(new AppError("Creator cannot backed your own project", 403));
   }
 
   if (user) {
@@ -119,10 +124,14 @@ exports.restrictUpdate = (req, res, next) => {
     return next(new AppError("Unauthorized", 401));
   }
   if (req.body.status) {
-    return next(new AppError('Invalid route to update status of this project.', 403))
+    return next(
+      new AppError("Invalid route to update status of this project.", 403)
+    );
   }
   if (req.project.approval.isApproved) {
-    return next(new AppError("Project has been approved. Editing is not allowed", 403));
+    return next(
+      new AppError("Project has been approved. Editing is not allowed", 403)
+    );
   }
   if (req.project.status === "on-going") {
     return next(new AppError("Cannot update an on-going project", 403));
@@ -133,6 +142,7 @@ exports.restrictUpdate = (req, res, next) => {
     target_end: req.body.target_end || req.project.target_end,
     target_fund: req.body.target_fund || req.project.target_fund,
     description: req.body.description || req.project.description,
+    location: req.body.location || req.project.location,
   };
 
   req.body = payload;
@@ -144,20 +154,32 @@ exports.prepareLaunch = (req, res, next) => {
     return next(new AppError("Unauthorized", 401));
   }
   if (!req.project.approval.isApproved) {
-    return next(new AppError("Project has not been approved. Launching project is not allowed", 403));
+    return next(
+      new AppError(
+        "Project has not been approved. Launching project is not allowed",
+        403
+      )
+    );
   }
-  if (req.project.status !== 'drafted') {
-    return next(new AppError(`Project has already ${(req.project.status === 'on-going') ? 'launched' : req.project.status}`, 403))
+  if (req.project.status !== "drafted") {
+    return next(
+      new AppError(
+        `Project has already ${
+          req.project.status === "on-going" ? "launched" : req.project.status
+        }`,
+        403
+      )
+    );
   }
 
   let payload = {
-    status: req.body.status || req.project.status
-  }
+    status: req.body.status || req.project.status,
+  };
 
-  req.body = payload
+  req.body = payload;
 
-  next()
-}
+  next();
+};
 
 exports.getProjects = handleFactory.getAll(Project);
 exports.createProject = handleFactory.createOne(Project);
