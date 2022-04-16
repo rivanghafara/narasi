@@ -8,10 +8,10 @@ const router = express.Router();
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
+router.post("/forgot-password", authController.forgotPassword);
+router.patch("/reset-password/:token", authController.resetPassword);
 
-
-
-router.use(authController.protects)
+router.use(authController.protects);
 
 router.get("/logout", authController.logout);
 
@@ -29,6 +29,6 @@ router.patch(
   uploadController.uploadImage
 );
 
-router.patch('/updatePassword', authController.updatePassword)
+router.patch("/update-password", authController.updatePassword);
 
 module.exports = router;

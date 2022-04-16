@@ -1,5 +1,6 @@
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const catchAsync = require("../utils/catchAsync");
 
 const User = require("../models/userModel");
@@ -14,6 +15,7 @@ const secret = process.env.JWT_SECRET;
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
+    issuer: process.env.JWT_BACKEND_ISSUER,
   });
 };
 
@@ -165,5 +167,57 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   // 4. create new token
+  createToken(user, 201, res);
+});
+
+exports.forgotPassword = catchAsync(async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new AppError("User does not exist", 404));
+  }
+
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: "success",
+    data: resetToken,
+  });
+});
+
+exports.resetPassword = catchAsync(async (req, res) => {
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  // find this token and token expiration
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: new Date.now() },
+  });
+
+  // check token expiration, if expired then return error
+  if (!user) {
+    return next(new AppError("Token has been expired", 400));
+  }
+
+  // check if password === passwordConfirm
+  if (req.body.password !== req.body.passwordConfirm) {
+    return next(
+      new AppError("Password and Password confirm are not matched", 400)
+    );
+  }
+
+  // password set to current password
+  // remove token and token expiration from db (set to undefined)
+  // save
+  // call createToken function
+  user.password = req.body.password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
   createToken(user, 201, res);
 });
