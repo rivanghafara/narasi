@@ -1,6 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const ApiFeatures = require('../utils/apiFeatures')
+const ApiFeatures = require("../utils/apiFeatures");
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
@@ -12,20 +12,24 @@ exports.createOne = (Model) =>
     });
   });
 
-exports.getAll = (Model) => catchAsync(async (req, res) => {
-  let filter = {}
+exports.getAll = (Model) =>
+  catchAsync(async (req, res) => {
+    let filter = {};
 
-  const features = new ApiFeatures(Model.find(filter), req.query).filter().sort().page()
-  const doc = await features.dbQuery
+    const features = new ApiFeatures(Model.find(filter), req.query)
+      .filter()
+      .sort()
+      .page();
+    const doc = await features.dbQuery;
 
-  res.status(200).json({
-    status: "success",
-    result: doc.length,
-    page: parseInt(req.query.page) || 1,
-    limit: parseInt(req.query.limit) || 5,
-    data: doc,
+    res.status(200).json({
+      status: "success",
+      result: doc.length,
+      page: parseInt(req.query.page) || 1,
+      limit: parseInt(req.query.limit) || 5,
+      data: doc,
+    });
   });
-});
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
